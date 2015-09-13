@@ -1,0 +1,19 @@
+describe 'Bind Nameserver live configuration' do
+  context nameserver('ns1.bancaditalia.it') do
+    domain('bancaditalia.it').should_have_mx('smtp.bancaditalia.it').with_precendence(10)
+    domain('bancaditalia.it').should_have_ns('ns1.bancaditalia.it')
+
+    record('www.bancaditalia.it').should_have_a('1.2.3.4')
+    record('www.bancaditalia.it').should_alias_to('vip.bancaditalia.it')
+  end
+end
+
+describe 'Namserver configurazione' do
+  context ns_zone('bancaditalia.it') do
+    its(:mx) { should include '1.2.3.4' }
+    its(:ns) { should include '1.2.3.4' }
+
+    it { should have_record('A','www.bancaditalia.it', '1.2.3.4') }
+    it { should have_record('CNAME','www.bancaditalia.it', 'web.bancaditalia.it') }
+  end
+end

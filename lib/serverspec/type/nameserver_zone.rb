@@ -32,13 +32,17 @@ module Serverspec::Type
       has_record?("-x #{query}", record, ttl)
     end
 
+    def has_txt?(query, record, ttl=nil)
+      has_record?("-q #{query} TXT", record, ttl)
+    end
+
     private
     def has_record?(query, record, ttl)
       ret = false
 
       output = @runner.run_command("dig +nosearch +noall +answer +time=1 #{query} @8.8.8.8").stdout.strip.split("\n")
       output.each { |result|
-        result = result.split(/([a-zA-Z\.-_]+)\s+(\d+)\s+(\w+)\s+(\w+)\s+([a-zA-Z\.-_]+)/)
+        result = result.split(/([a-zA-Z\.-_]+)\s+(\d+)\s+(\w+)\s+(\w+)\s+(.+)/)
         actual_ttl = result[2].to_i
         actual_record = result[5].chomp(".")
         ret = true if actual_record.eql? record
